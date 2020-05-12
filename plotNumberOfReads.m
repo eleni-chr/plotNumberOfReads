@@ -28,27 +28,15 @@ sequenced=zeros(d,1);
 high_quality=zeros(d,1);
 aligned=zeros(d,1);
 
-%Obtain data for two series.
+%Obtain data.
 for f=1:d %loop through each MAT file.
     cd(D(f).folder); %navigate to folder containing MAT file.
     load('qname_analysis.mat','unique_qnames','unique_mapped') %load the data into the workspace.
-    high_quality(f)=length(unique_qnames);
-    aligned(f)=length(unique_mapped);
+    high_quality(f)=length(unique_qnames); %obtain data for second series.
+    aligned(f)=length(unique_mapped); %obtain data for third series.
     clear unique_qnames unique_mapped
-end
-cd(wd); %return to working directory.
-
-%Obtain data for third series.
-cd ..
-cd(strcat(pwd,'\Data analysis (unfiltered)')); %navigate to folder with the rest of the MAT files.
-D=dir('*/fastq_analysis.mat'); %get list of MAT files in subfolders.
-d=length(D); %number of MAT files found.
-
-%Obtain data for two series.
-for f=1:d %loop through each MAT file.
-    cd(D(f).folder); %navigate to folder containing MAT file.
     load('fastq_analysis.mat','fastq_headers') %load the data into the workspace.
-    sequenced(f)=length(fastq_headers);
+    sequenced(f)=length(fastq_headers); %obtain data for first series.
     clear fastq_headers
 end
 cd(wd); %return to working directory.
@@ -62,8 +50,8 @@ categories={'Wildtype 1','Wildtype 2','Wildtype 3','Mutant 1','Mutant 2','Mutant
 x=categorical(categories); %convert x to categorical data for plotting.
 x=reordercats(x,{'Wildtype 1','Wildtype 2','Wildtype 3','Mutant 1','Mutant 2','Mutant 3'}); %re-order categories because previous line sorts them in alphabetical order.
 b=bar(x,y); %plot bar chart.
-ylabel('Number of reads','FontSize',12); %add y-axis label.
-lgd=legend({'Sequenced','High-quality*','Aligned**'},'FontSize',12); %add chart legend.
+ylabel('Number of reads','FontSize',14); %add y-axis label.
+lgd=legend({'Sequenced','High-quality*','Aligned**'},'FontSize',14); %add chart legend.
 set(gca,'box','off'); %remove top x-axis and right y-axis.
 XAxis.FontSize=14; %set x-axis fontsize.
 YAxis.FontSize=14; %set y-axis fontsize.
@@ -97,6 +85,24 @@ text(xtips2,[0 0 0 0 0 0],barLabels2,'VerticalAlignment','bottom','HorizontalAli
 percentages3=round(y(:,3)./y(:,2).*100);
 barLabels3=cellstr(strcat(num2str(percentages3),'%'))';
 text(xtips3,[0 0 0 0 0 0],barLabels3,'VerticalAlignment','bottom','HorizontalAlignment','center','FontSize',12);
+
+% for a=1:3
+%     %Display values on top of bars.
+%     xtips=b(a).XEndPoints;
+%     ytips=b(a).YEndPoints;
+%     labels=strcat(string(b(a).YData),'%');
+%     t=text(xtips,ytips,labels,'HorizontalAlignment','right','VerticalAlignment','middle','FontSize',14);
+%     set(t,'Rotation',90);
+%     
+%     %Display percentages at bottom of bars.
+%     if a>1
+%         for p=2:3
+%             percentages=round(y(:,p)./y(:,p-1).*100);
+%             barLabels=cellstr(strcat(num2str(percentages),'%'))';
+%             text(xtips,[0 0 0 0 0 0],barLabels,'VerticalAlignment','bottom','HorizontalAlignment','center','FontSize',14);
+%         end
+%     end
+% end
 
 %Save figure.
 savefig(fig,'NumberOfReads'); %save figure as a FIG file in the working directory.
